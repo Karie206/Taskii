@@ -53,7 +53,3 @@ npm run dev
 | POST | /api/tasks | Create task |
 | PUT | /api/tasks/:id | Update task |
 | DELETE | /api/tasks/:id | Delete task |
-
-## Author
-
-Karie206 - github.com/Karie206
