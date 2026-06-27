@@ -7,15 +7,20 @@ import { SquarePen, CheckCircle2, Circle, Calendar, Trash2, Check, X } from "luc
 import axios from 'axios';
 import { toast } from 'sonner';
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 const TaskCard = ({ task, index, onUpdate, onDelete }) => {
     const [isEditing, setIsEditing] = useState(false);
     const [editTitle, setEditTitle] = useState(task.title);
     const [loading, setLoading] = useState(false);
+    const [showActions, setShowActions] = useState(false);
+
+    const isTouchDevice = () => window.matchMedia("(hover: none)").matches;
 
     const handleToggle = async () => {
         try {
             const newStatus = task.status === 'complete' ? 'active' : 'complete';
-            await axios.put(`http://localhost:3000/api/tasks/${task._id}`, {
+            await axios.put(`${API_URL}/api/tasks/${task._id}`, {
                 status: newStatus,
                 completedAt: newStatus === 'complete' ? new Date() : null
             });
@@ -29,7 +34,7 @@ const TaskCard = ({ task, index, onUpdate, onDelete }) => {
         if (!editTitle.trim()) return toast.error("Title can't be empty!");
         try {
             setLoading(true);
-            await axios.put(`http://localhost:3000/api/tasks/${task._id}`, { title: editTitle });
+            await axios.put(`${API_URL}/api/tasks/${task._id}`, { title: editTitle });
             toast.success("Update successfully!");
             setIsEditing(false);
             onUpdate();
@@ -42,7 +47,7 @@ const TaskCard = ({ task, index, onUpdate, onDelete }) => {
 
     const handleDelete = async () => {
         try {
-            await axios.delete(`http://localhost:3000/api/tasks/${task._id}`);
+            await axios.delete(`${API_URL}/api/tasks/${task._id}`);
             toast.success("Delete successfully!");
             onDelete();
         } catch {
@@ -51,11 +56,15 @@ const TaskCard = ({ task, index, onUpdate, onDelete }) => {
     };
 
     return (
-        <Card className={cn(
-            "p-4 bg-gradient-card border-0 shadow-custom hover:shadow-custom-lg transition-all duration-200 animate-fade-in group/card",
-            task.status === "complete" && "opacity-75"
-        )}
+        <Card
+            className={cn(
+                "p-4 bg-gradient-card border-0 shadow-custom hover:shadow-custom-lg transition-all duration-200 animate-fade-in group/card",
+                task.status === "complete" && "opacity-75"
+            )}
             style={{ animationDelay: `${index * 50}ms` }}
+            onMouseEnter={() => !isTouchDevice() && setShowActions(true)}
+            onMouseLeave={() => !isTouchDevice() && setShowActions(false)}
+            onClick={() => isTouchDevice() && setShowActions(prev => !prev)}
         >
             <div className="flex items-center gap-4">
                 <Button variant="ghost" size="icon"
@@ -65,7 +74,7 @@ const TaskCard = ({ task, index, onUpdate, onDelete }) => {
                             ? "text-success hover:text-success/80 hover:bg-success/20"
                             : "text-muted-foreground hover:text-primary hover:bg-primary/20"
                     )}
-                    onClick={handleToggle}
+                    onClick={(e) => { e.stopPropagation(); handleToggle(); }}
                 >
                     {task.status === "complete" ? <CheckCircle2 className="size-5" /> : <Circle className="size-5" />}
                 </Button>
@@ -78,6 +87,7 @@ const TaskCard = ({ task, index, onUpdate, onDelete }) => {
                             onKeyDown={(e) => e.key === 'Enter' && handleEdit()}
                             className="h-8 text-base"
                             autoFocus
+                            onClick={(e) => e.stopPropagation()}
                         />
                     ) : (
                         <p className={cn(
@@ -104,18 +114,22 @@ const TaskCard = ({ task, index, onUpdate, onDelete }) => {
                     </div>
                 </div>
 
-                <div className="hidden gap-2 group-hover/card:inline-flex animate-slide-up">
+                <div className={cn(
+                    "flex gap-2 transition-all duration-200",
+                    showActions ? "inline-flex" : "hidden"
+                )}>
                     {isEditing ? (
                         <>
                             <Button variant="ghost" size="icon"
                                 className="size-8 text-success hover:text-success hover:bg-transparent"
-                                onClick={handleEdit} disabled={loading}
+                                onClick={(e) => { e.stopPropagation(); handleEdit(); }}
+                                disabled={loading}
                             >
                                 <Check className="size-4" />
                             </Button>
                             <Button variant="ghost" size="icon"
                                 className="size-8 text-muted-foreground hover:text-destructive hover:bg-transparent"
-                                onClick={() => { setIsEditing(false); setEditTitle(task.title); }}
+                                onClick={(e) => { e.stopPropagation(); setIsEditing(false); setEditTitle(task.title); }}
                             >
                                 <X className="size-4" />
                             </Button>
@@ -124,13 +138,13 @@ const TaskCard = ({ task, index, onUpdate, onDelete }) => {
                         <>
                             <Button variant="ghost" size="icon"
                                 className="size-8 text-muted-foreground hover:text-info hover:bg-transparent"
-                                onClick={() => setIsEditing(true)}
+                                onClick={(e) => { e.stopPropagation(); setIsEditing(true); }}
                             >
                                 <SquarePen className="size-4" />
                             </Button>
                             <Button variant="ghost" size="icon"
                                 className="size-8 text-muted-foreground hover:text-destructive hover:bg-transparent"
-                                onClick={handleDelete}
+                                onClick={(e) => { e.stopPropagation(); handleDelete(); }}
                             >
                                 <Trash2 className="size-4" />
                             </Button>
