@@ -3,7 +3,7 @@ import { Button } from './ui/button';
 import { Card } from "./ui/card";
 import { Input } from "./ui/input";
 import { cn } from "../lib/utils";
-import { SquarePen, CheckCircle2, Circle, Calendar, Trash2, Check, X } from "lucide-react";
+import { SquarePen, CheckCircle2, Circle, Calendar, Trash2, Check, X, Clock } from "lucide-react";
 import axios from 'axios';
 import { toast } from 'sonner';
 
@@ -111,7 +111,7 @@ const TaskCard = ({ task, index, onUpdate, onDelete }) => {
                         {task.completedAt && (
                             <>
                                 <span className="text-xs text-muted-foreground"> - </span>
-                                <Calendar className="size-3 text-success" />
+                                <Clock className="size-3 text-success" />
                                 <span className="text-xs text-success">
                                     {new Date(task.completedAt).toLocaleString('vi-VN', {
                                         day: '2-digit',
