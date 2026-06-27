@@ -116,7 +116,9 @@ const TaskCard = ({ task, index, onUpdate, onDelete }) => {
 
                 <div className={cn(
                     "flex gap-2 transition-all duration-200",
-                    showActions ? "inline-flex" : "hidden"
+                    showActions
+                        ? "opacity-100 translate-y-0 pointer-events-auto"
+                        : "opacity-0 translate-y-2 pointer-events-none"
                 )}>
                     {isEditing ? (
                         <>
