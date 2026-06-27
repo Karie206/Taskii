@@ -100,14 +100,26 @@ const TaskCard = ({ task, index, onUpdate, onDelete }) => {
                     <div className="flex items-center gap-2 mt-1">
                         <Calendar className="size-3 text-muted-foreground" />
                         <span className="text-xs text-muted-foreground">
-                            {new Date(task.createdAt).toLocaleDateString()}
+                            {new Date(task.createdAt).toLocaleString('vi-VN', {
+                                day: '2-digit',
+                                month: '2-digit',
+                                year: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit'
+                            })}
                         </span>
                         {task.completedAt && (
                             <>
                                 <span className="text-xs text-muted-foreground"> - </span>
                                 <Calendar className="size-3 text-success" />
                                 <span className="text-xs text-success">
-                                    {new Date(task.completedAt).toLocaleDateString()}
+                                    {new Date(task.completedAt).toLocaleString('vi-VN', {
+                                        day: '2-digit',
+                                        month: '2-digit',
+                                        year: 'numeric',
+                                        hour: '2-digit',
+                                        minute: '2-digit'
+                                    })}
                                 </span>
                             </>
                         )}
