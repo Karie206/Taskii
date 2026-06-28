@@ -10,15 +10,16 @@ import { FilterType, DateFilter } from '../lib/data';
 import { useEffect } from 'react';
 import { toast } from 'sonner';
 import axios from 'axios';
+import ParticleBackground from '../components/ParticleBackground';
 
 const gridBackground = {
     backgroundImage: `
-        linear-gradient(to right, #e2e8f0 1px, transparent 1px),
-        linear-gradient(to bottom, #e2e8f0 1px, transparent 1px)
-    `,
+    linear-gradient(to right, #e2e8f0 1px, transparent 1px),
+    linear-gradient(to bottom, #e2e8f0 1px, transparent 1px)
+  `,
     backgroundSize: '20px 30px',
-    WebkitMaskImage: 'radial-gradient(ellipse 70% 60% at 50% 0%, #000 60%, transparent 100%)',
-    maskImage: 'radial-gradient(ellipse 70% 60% at 50% 0%, #000 60%, transparent 100%)',
+    WebkitMaskImage: 'radial-gradient(ellipse 80% 50% at 50% 0%, #000 70%, transparent 100%)',
+    maskImage: 'radial-gradient(ellipse 80% 50% at 50% 0%, #000 70%, transparent 100%)',
 };
 
 const HomePage = () => {
@@ -74,8 +75,9 @@ const HomePage = () => {
 
 
     return (
-        <div className="min-h-screen w-full bg-[#f8fafc] relative">
+        <div className="min-h-screen w-full bg-white relative">
             <div className="absolute inset-0 z-0" style={gridBackground} />
+            <ParticleBackground />
 
             <div className="relative z-10 container pt-8 mx-auto">
                 <div className="w-full max-w-2xl p-6 mx-auto space-y-6">
