@@ -2,7 +2,7 @@
 
 A simple task management app built with React and Node.js.
 
-Live: https://taskii-zk04.onrender.com
+![Status](https://img.shields.io/badge/status-maintenance-orange?style=flat-square)
 
 ## Tech Stack
 
