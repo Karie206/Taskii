@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import { Card } from "./ui/card";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
-import { Plus } from 'lucide-react';
 import axios from 'axios';
 import { toast } from 'sonner';
+
+const API_URL = import.meta.env.VITE_API_URL;
 
 const AddTask = ({ onTaskAdded }) => {
     const [title, setTitle] = useState('');
@@ -12,13 +13,19 @@ const AddTask = ({ onTaskAdded }) => {
 
     const handleAdd = async () => {
         if (!title.trim()) return toast.error("Please enter a task name!");
+
         try {
             setLoading(true);
-            await axios.post('http://localhost:3000/api/tasks', { title });
+
+            await axios.post(`${API_URL}/api/tasks`, {
+                title: title.trim()
+            });
+
             setTitle('');
             toast.success("Task added!");
             onTaskAdded();
         } catch (err) {
+            console.error(err);
             toast.error("Failed to add task!");
         } finally {
             setLoading(false);
@@ -36,8 +43,15 @@ const AddTask = ({ onTaskAdded }) => {
                     onChange={(e) => setTitle(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
                 />
-                <Button variant="gradient" size="xl" className="px-6" onClick={handleAdd} disabled={loading}>
-                    Add Task
+
+                <Button
+                    variant="gradient"
+                    size="xl"
+                    className="px-6"
+                    onClick={handleAdd}
+                    disabled={loading}
+                >
+                    {loading ? "Adding..." : "Add Task"}
                 </Button>
             </div>
         </Card>
