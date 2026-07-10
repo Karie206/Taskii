@@ -10,7 +10,7 @@ const TaskListPagination = ({ currentPage, totalPages, onPageChange }) => {
             <Button
                 variant="ghost"
                 size="icon"
-                className="size-8"
+                className="size-8 rounded-full"
                 onClick={() => onPageChange(currentPage - 1)}
                 disabled={currentPage === 1}
             >
@@ -32,7 +32,7 @@ const TaskListPagination = ({ currentPage, totalPages, onPageChange }) => {
             <Button
                 variant="ghost"
                 size="icon"
-                className="size-8"
+                className="size-8 rounded-full"
                 onClick={() => onPageChange(currentPage + 1)}
                 disabled={currentPage === totalPages}
             >
