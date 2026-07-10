@@ -5,29 +5,37 @@ import StatsAndFilters from '../components/StatsAndFilters';
 import TaskList from '../components/TaskList';
 import TaskListPagination from '../components/TaskListPagination';
 import Footer from '../components/Footer';
-import { useState } from 'react';
+import CommandPalette from '../components/CommandPalette';
+import ConfettiCelebration from '../components/ConfettiCelebration';
+import ScrollToTop from '../components/ScrollToTop';
+import ParticleBackground from '../components/ParticleBackground';
+import { useTheme } from '../context/ThemeContext';
+import { useState, useEffect, useRef } from 'react';
 import { FilterType, DateFilter } from '../lib/data';
-import { useEffect } from 'react';
 import { toast } from 'sonner';
 import axios from 'axios';
-import ParticleBackground from '../components/ParticleBackground';
-
-const gridBackground = {
-    backgroundImage: `
-    linear-gradient(to right, #e2e8f0 1px, transparent 1px),
-    linear-gradient(to bottom, #e2e8f0 1px, transparent 1px)
-  `,
-    backgroundSize: '20px 30px',
-    WebkitMaskImage: 'radial-gradient(ellipse 80% 50% at 50% 0%, #000 70%, transparent 100%)',
-    maskImage: 'radial-gradient(ellipse 80% 50% at 50% 0%, #000 70%, transparent 100%)',
-};
 
 const HomePage = () => {
+    const { isDark } = useTheme();
     const [filter, setFilter] = useState(FilterType.all);
-    const [dateFilter, setDateFilter] = useState('all'); // dùng key
+    const [dateFilter, setDateFilter] = useState('all');
     const [currentPage, setCurrentPage] = useState(1);
     const ITEMS_PER_PAGE = 4;
     const [taskBuffer, setTaskBuffer] = useState([]);
+    const addTaskInputRef = useRef(null);
+
+    // Grid background — theme-aware
+    const gridBackground = {
+        backgroundImage: isDark
+            ? `linear-gradient(to right, rgba(255,255,255,0.04) 1px, transparent 1px),
+               linear-gradient(to bottom, rgba(255,255,255,0.04) 1px, transparent 1px)`
+            : `linear-gradient(to right, #e2e8f0 1px, transparent 1px),
+               linear-gradient(to bottom, #e2e8f0 1px, transparent 1px)`,
+        backgroundSize: '20px 30px',
+        WebkitMaskImage: 'radial-gradient(ellipse 80% 50% at 50% 0%, #000 70%, transparent 100%)',
+        maskImage: 'radial-gradient(ellipse 80% 50% at 50% 0%, #000 70%, transparent 100%)',
+        transition: 'background-image 0.3s ease',
+    };
 
     const filteredByDate = taskBuffer.filter(t => {
         const created = new Date(t.createdAt);
@@ -57,6 +65,9 @@ const HomePage = () => {
         currentPage * ITEMS_PER_PAGE
     );
 
+    // Confetti trigger: all tasks completed and there is at least one
+    const allCompleted = taskBuffer.length > 0 && taskBuffer.every(t => t.status === 'complete');
+
     useEffect(() => {
         fetchTasks();
     }, []);
@@ -73,16 +84,22 @@ const HomePage = () => {
         }
     }
 
+    const handleAddTaskFocus = () => {
+        addTaskInputRef.current?.focus();
+    };
 
     return (
-        <div className="min-h-screen w-full bg-white relative">
+        <div className={`min-h-screen w-full relative transition-colors duration-300 ${isDark ? 'bg-[hsl(222.2,84%,4.9%)]' : 'bg-white'}`}>
             <div className="absolute inset-0 z-0" style={gridBackground} />
             <ParticleBackground />
 
             <div className="relative z-10 container pt-8 mx-auto">
                 <div className="w-full max-w-2xl p-6 mx-auto space-y-6">
-                    <Header />
-                    <AddTask onTaskAdded={fetchTasks} />
+                    <Header
+                        completedTaskCount={completedTaskCount}
+                        activeTaskCount={activeTaskCount}
+                    />
+                    <AddTask onTaskAdded={fetchTasks} inputRef={addTaskInputRef} />
                     <StatsAndFilters
                         filter={filter}
                         onFilterChange={setFilter}
@@ -98,6 +115,15 @@ const HomePage = () => {
                     <Footer activeTaskCount={activeTaskCount} completedTaskCount={completedTaskCount} />
                 </div>
             </div>
+
+            {/* New feature components */}
+            <CommandPalette
+                tasks={taskBuffer}
+                onFilterChange={setFilter}
+                onAddTaskFocus={handleAddTaskFocus}
+            />
+            <ConfettiCelebration trigger={allCompleted} />
+            <ScrollToTop />
         </div>
     );
 };

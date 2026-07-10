@@ -7,7 +7,7 @@ import { toast } from 'sonner';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-const AddTask = ({ onTaskAdded }) => {
+const AddTask = ({ onTaskAdded, inputRef }) => {
     const [title, setTitle] = useState('');
     const [loading, setLoading] = useState(false);
 
@@ -33,12 +33,13 @@ const AddTask = ({ onTaskAdded }) => {
     };
 
     return (
-        <Card className="p-6 border-0 bg-gradient-card shadow-custom-lg">
+        <Card className="p-6 border-0 bg-gradient-card shadow-custom-lg dark:bg-slate-900/80 dark:border dark:border-slate-700/50 transition-colors">
             <div className="flex flex-col gap-3 sm:flex-row">
                 <Input
+                    ref={inputRef}
                     type="text"
                     placeholder="Add a new task..."
-                    className="h-12 text-base bg-slate-50 sm:flex-1 border-border/50 focus:border-primary/50 focus:ring-primary/20"
+                    className="h-12 text-base bg-slate-50 dark:bg-slate-800 dark:text-foreground dark:border-slate-700 sm:flex-1 border-border/50 focus:border-primary/50 focus:ring-primary/20 transition-colors"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && handleAdd()}

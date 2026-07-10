@@ -12,7 +12,7 @@ const TaskList = ({ filteredTasks, filter, onUpdate, onDelete }) => {
         <div className="space-y-3">
             {filteredTasks.map((task, index) => (
                 <TaskCard
-                    key={task._id ?? index}
+                    key={task.id ?? index}
                     task={task}
                     index={index}
                     onUpdate={onUpdate}

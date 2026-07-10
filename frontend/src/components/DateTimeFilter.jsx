@@ -5,7 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 const DateTimeFilter = ({ dateFilter, onDateFilterChange }) => {
     return (
         <Select value={dateFilter} onValueChange={onDateFilterChange}>
-            <SelectTrigger className="w-36 h-9 text-sm bg-white border-border/50">
+            <SelectTrigger className="w-36 h-9 text-sm bg-white dark:bg-slate-800 dark:text-foreground dark:border-slate-700 border-border/50 transition-colors">
                 <SelectValue placeholder="All time" />
             </SelectTrigger>
             <SelectContent>

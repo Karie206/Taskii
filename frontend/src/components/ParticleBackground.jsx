@@ -1,7 +1,9 @@
 import { useEffect, useRef } from 'react';
+import { useTheme } from '../context/ThemeContext';
 
 const ParticleBackground = () => {
     const canvasRef = useRef(null);
+    const { isDark } = useTheme();
 
     useEffect(() => {
         const canvas = canvasRef.current;
@@ -25,6 +27,15 @@ const ParticleBackground = () => {
             r: Math.random() * 2 + 1,
         }));
 
+        // Theme-aware colors
+        const dotColor = isDark
+            ? 'rgba(74, 222, 128, 0.7)'   // bright neon green in dark mode
+            : 'rgba(100, 200, 150, 0.6)';  // soft green in light mode
+
+        const getLineColor = (opacity) => isDark
+            ? `rgba(74, 222, 128, ${opacity * 0.4})`
+            : `rgba(100, 200, 150, ${opacity * 0.3})`;
+
         const draw = () => {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -35,13 +46,21 @@ const ParticleBackground = () => {
                 if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
                 if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
 
-                // vẽ chấm
+                // Draw dot
                 ctx.beginPath();
                 ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-                ctx.fillStyle = 'rgba(100, 200, 150, 0.6)';
+                ctx.fillStyle = dotColor;
                 ctx.fill();
 
-                // vẽ đường kẻ giữa các hạt gần nhau
+                // Add glow in dark mode
+                if (isDark) {
+                    ctx.shadowBlur = 8;
+                    ctx.shadowColor = 'rgba(74, 222, 128, 0.5)';
+                } else {
+                    ctx.shadowBlur = 0;
+                }
+
+                // Draw lines between nearby particles
                 for (let j = i + 1; j < particles.length; j++) {
                     const q = particles[j];
                     const dx = p.x - q.x;
@@ -51,8 +70,9 @@ const ParticleBackground = () => {
                         ctx.beginPath();
                         ctx.moveTo(p.x, p.y);
                         ctx.lineTo(q.x, q.y);
-                        ctx.strokeStyle = `rgba(100, 200, 150, ${(1 - d / DIST) * 0.3})`;
+                        ctx.strokeStyle = getLineColor(1 - d / DIST);
                         ctx.lineWidth = 0.8;
+                        ctx.shadowBlur = 0;
                         ctx.stroke();
                     }
                 }
@@ -65,7 +85,7 @@ const ParticleBackground = () => {
             cancelAnimationFrame(animId);
             window.removeEventListener('resize', resize);
         };
-    }, []);
+    }, [isDark]);
 
     return (
         <canvas
