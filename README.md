@@ -7,6 +7,11 @@
 
 A full-stack to-do app for organizing daily tasks — add, track, and complete your work.
 
+## Live Demo
+
+* App: https://taskii-zk04.onrender.com/
+* API: https://taskii-hwg0.onrender.com
+
 ## Tech Stack
 
 * Frontend: React 19, Vite, Tailwind CSS v4, shadcn/ui
