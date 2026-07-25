@@ -22,6 +22,7 @@ const HomePage = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const ITEMS_PER_PAGE = 4;
     const [taskBuffer, setTaskBuffer] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
     const addTaskInputRef = useRef(null);
 
     // Grid background — theme-aware
@@ -82,7 +83,35 @@ const HomePage = () => {
             console.log(err)
             toast.error("Failed to fetch tasks")
         }
+        finally {
+            // Skeleton only shows on the first load, not on every refetch
+            setIsLoading(false)
+        }
     }
+
+    const handleReorder = async (sourceId, targetId) => {
+        const previous = taskBuffer;
+        const from = previous.findIndex(t => t._id === sourceId);
+        const to = previous.findIndex(t => t._id === targetId);
+        if (from === -1 || to === -1 || from === to) return;
+
+        const reordered = [...previous];
+        const [moved] = reordered.splice(from, 1);
+        reordered.splice(to, 0, moved);
+
+        // Optimistic update, rolled back if the request fails
+        setTaskBuffer(reordered);
+
+        try {
+            await axios.put(`${import.meta.env.VITE_API_URL}/api/tasks/reorder`, {
+                ids: reordered.map(t => t._id)
+            });
+        } catch (err) {
+            console.log(err);
+            setTaskBuffer(previous);
+            toast.error(err?.response?.data?.message ?? "Failed to reorder tasks");
+        }
+    };
 
     const handleAddTaskFocus = () => {
         addTaskInputRef.current?.focus();
@@ -106,7 +135,14 @@ const HomePage = () => {
                         activeTaskCount={activeTaskCount}
                         completedTaskCount={completedTaskCount}
                     />
-                    <TaskList filteredTasks={paginatedTasks} filter={filter} onUpdate={fetchTasks} onDelete={fetchTasks} />
+                    <TaskList
+                        filteredTasks={paginatedTasks}
+                        filter={filter}
+                        isLoading={isLoading}
+                        onUpdate={fetchTasks}
+                        onDelete={fetchTasks}
+                        onReorder={handleReorder}
+                    />
                     <div className="flex flex-col items-center justify-center gap-6 sm:flex-row">
                         <TaskListPagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
                         <DateTimeFilter dateFilter={dateFilter} onDateFilterChange={setDateFilter} />

@@ -15,6 +15,11 @@ const taskSchema = new mongoose.Schema({
         type: Date,
         default: null,
     },
+    order: {
+        type: Number,
+        default: 0,
+        index: true,
+    },
 },
 
     {

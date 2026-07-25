@@ -5,7 +5,7 @@ import { Circle } from 'lucide-react';
 
 const TaskEmptyState = ({ filter }) => {
     return (
-        <Card className="p-8 text-center border-0 bg-gradient-card shadow-custom-md">
+        <Card className="p-8 text-center border rounded-xl border-border/60 bg-gradient-card shadow-custom-md">
             <div className="space-y-3">
                 <Circle className="mx-auto size-12 text-muted-foreground" />
                 <div className="space-y-1">

@@ -3,13 +3,13 @@ import { Button } from './ui/button';
 import { Card } from "./ui/card";
 import { Input } from "./ui/input";
 import { cn } from "../lib/utils";
-import { SquarePen, CheckCircle2, Circle, Calendar, Trash2, Check, X, Clock } from "lucide-react";
+import { SquarePen, CheckCircle2, Circle, Calendar, Trash2, Check, X, Clock, GripVertical } from "lucide-react";
 import axios from 'axios';
 import { toast } from 'sonner';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-const TaskCard = ({ task, index, onUpdate, onDelete }) => {
+const TaskCard = ({ task, index, onUpdate, onDelete, dragHandleProps, isDragging, isSorting }) => {
     const [isEditing, setIsEditing] = useState(false);
     const [editTitle, setEditTitle] = useState(task.title);
     const [loading, setLoading] = useState(false);
@@ -58,15 +58,34 @@ const TaskCard = ({ task, index, onUpdate, onDelete }) => {
     return (
         <Card
             className={cn(
-                "p-4 bg-gradient-card border-0 shadow-custom hover:shadow-custom-lg transition-all duration-200 animate-fade-in group/card",
-                task.status === "complete" && "opacity-75"
+                "p-4 rounded-xl border border-border/60 bg-gradient-card shadow-custom hover:shadow-custom-lg transition-[box-shadow,border-color,opacity] duration-200 animate-fade-in group/card",
+                task.status === "complete" && "opacity-75",
+                isSorting && !isDragging && "pointer-events-none",
+                isDragging && "opacity-100 shadow-custom-lg border-primary/50 ring-2 ring-primary/20 cursor-grabbing"
             )}
-            style={{ animationDelay: `${index * 50}ms` }}
+            style={isDragging ? undefined : { animationDelay: `${index * 50}ms` }}
             onMouseEnter={() => !isTouchDevice() && setShowActions(true)}
             onMouseLeave={() => !isTouchDevice() && setShowActions(false)}
             onClick={() => isTouchDevice() && setShowActions(prev => !prev)}
         >
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
+                <span
+                    role="button"
+                    tabIndex={-1}
+                    aria-label="Drag to reorder"
+                    title="Drag to reorder"
+                    className={cn(
+                        "flex-shrink-0 p-1 -ml-1 rounded-md touch-none select-none transition-colors duration-200 hover:bg-muted hover:text-foreground",
+                        isDragging
+                            ? "cursor-grabbing text-foreground"
+                            : "cursor-grab text-muted-foreground/40 group-hover/card:text-muted-foreground"
+                    )}
+                    onClick={(e) => e.stopPropagation()}
+                    {...dragHandleProps}
+                >
+                    <GripVertical className="size-4" />
+                </span>
+
                 <Button variant="ghost" size="icon"
                     className={cn(
                         "flex-shrink-0 size-8 rounded-full transition-all duration-200",
@@ -85,7 +104,7 @@ const TaskCard = ({ task, index, onUpdate, onDelete }) => {
                             value={editTitle}
                             onChange={(e) => setEditTitle(e.target.value)}
                             onKeyDown={(e) => e.key === 'Enter' && handleEdit()}
-                            className="h-8 text-base"
+                            className="h-8 text-base rounded-lg"
                             autoFocus
                             onClick={(e) => e.stopPropagation()}
                         />
@@ -128,21 +147,21 @@ const TaskCard = ({ task, index, onUpdate, onDelete }) => {
 
                 <div className={cn(
                     "flex gap-2 transition-all duration-200",
-                    showActions
+                    showActions && !isDragging
                         ? "opacity-100 translate-y-0 pointer-events-auto"
                         : "opacity-0 translate-y-2 pointer-events-none"
                 )}>
                     {isEditing ? (
                         <>
                             <Button variant="ghost" size="icon"
-                                className="size-8 text-success hover:text-success hover:bg-transparent"
+                                className="size-8 rounded-lg text-success hover:text-success hover:bg-transparent"
                                 onClick={(e) => { e.stopPropagation(); handleEdit(); }}
                                 disabled={loading}
                             >
                                 <Check className="size-4" />
                             </Button>
                             <Button variant="ghost" size="icon"
-                                className="size-8 text-muted-foreground hover:text-destructive hover:bg-transparent"
+                                className="size-8 rounded-lg text-muted-foreground hover:text-destructive hover:bg-transparent"
                                 onClick={(e) => { e.stopPropagation(); setIsEditing(false); setEditTitle(task.title); }}
                             >
                                 <X className="size-4" />
@@ -151,13 +170,13 @@ const TaskCard = ({ task, index, onUpdate, onDelete }) => {
                     ) : (
                         <>
                             <Button variant="ghost" size="icon"
-                                className="size-8 text-muted-foreground hover:text-info hover:bg-transparent"
+                                className="size-8 rounded-lg text-muted-foreground hover:text-info hover:bg-transparent"
                                 onClick={(e) => { e.stopPropagation(); setIsEditing(true); }}
                             >
                                 <SquarePen className="size-4" />
                             </Button>
                             <Button variant="ghost" size="icon"
-                                className="size-8 text-muted-foreground hover:text-destructive hover:bg-transparent"
+                                className="size-8 rounded-lg text-muted-foreground hover:text-destructive hover:bg-transparent"
                                 onClick={(e) => { e.stopPropagation(); handleDelete(); }}
                             >
                                 <Trash2 className="size-4" />

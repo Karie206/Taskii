@@ -33,13 +33,13 @@ const AddTask = ({ onTaskAdded, inputRef }) => {
     };
 
     return (
-        <Card className="p-6 border-0 bg-gradient-card shadow-custom-lg dark:bg-slate-900/80 dark:border dark:border-slate-700/50 transition-colors">
+        <Card className="p-6 transition-colors border rounded-xl border-border/60 bg-gradient-card shadow-custom-lg dark:bg-slate-900/80 dark:border-slate-700/50">
             <div className="flex flex-col gap-3 sm:flex-row">
                 <Input
                     ref={inputRef}
                     type="text"
                     placeholder="Add a new task..."
-                    className="h-12 text-base bg-slate-50 dark:bg-slate-800 dark:text-foreground dark:border-slate-700 sm:flex-1 border-border/50 focus:border-primary/50 focus:ring-primary/20 transition-colors"
+                    className="h-12 text-base transition-colors border rounded-xl bg-slate-50 dark:bg-slate-800 dark:text-foreground dark:border-slate-700 sm:flex-1 border-border/50 focus:border-primary/50 focus:ring-primary/20"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
@@ -48,7 +48,7 @@ const AddTask = ({ onTaskAdded, inputRef }) => {
                 <Button
                     variant="gradient"
                     size="xl"
-                    className="px-6"
+                    className="px-6 rounded-xl"
                     onClick={handleAdd}
                     disabled={loading}
                 >
